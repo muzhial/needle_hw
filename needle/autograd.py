@@ -1,6 +1,6 @@
 """Core data structures."""
 from collections import namedtuple
-from typing import List, NamedTuple, Optional, Tuple, Union, Dict
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 import numpy
 
