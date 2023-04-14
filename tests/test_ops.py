@@ -13,4 +13,5 @@ class TestOps(unittest.TestCase):
         self.assertTrue(y.requires_grad)
         self.assertTrue(len(y.inputs) == 1)
         self.assertTrue(y.inputs[0] is x)
-        self.assertTrue(y.cached_data == np.array([2, 3, 4]))
+        self.assertTrue(isinstance(y.op, ndl.AddScalar))
+        self.assertTrue(np.all(y.cached_data == np.array([2, 3, 4])))
