@@ -331,15 +331,20 @@ class Tensor(Value):
             return needle.ops.AddScalar(other)(self)
 
     def __mul__(self, other):
+        """
+        The method is called to implement the element-wise multiplication
+          operation * when the left operand is a Tensor.
+        """
         if isinstance(other, Tensor):
             return needle.ops.EWiseMul()(self, other)
         else:
             return needle.ops.MulScalar(other)(self)
 
     def __pow__(self, other):
-        ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+        if isinstance(other, Tensor):
+            raise TypeError('should be a scalar')
+        else:
+            return needle.ops.PowerScalar(other)(self)
 
     def __sub__(self, other):
         if isinstance(other, Tensor):
@@ -354,6 +359,10 @@ class Tensor(Value):
             return needle.ops.DivScalar(other)(self)
 
     def __matmul__(self, other):
+        """
+        The method is called to implement
+          the matrix multiplication operation @.
+        """
         return needle.ops.MatMul()(self, other)
 
     def matmul(self, other):
