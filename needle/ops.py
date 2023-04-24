@@ -206,8 +206,15 @@ class MatMul(TensorOp):
         d(XY) = (dX)Y + X(dY)
         """
         lhs, rhs = node.inputs
-        return (matmul(out_grad, transpose(rhs)),
-                matmul(transpose(lhs), out_grad))
+        lhs_grad, rhs_grad = (matmul(out_grad, transpose(rhs)),
+                              matmul(transpose(lhs), out_grad))
+        if lhs_grad.shape != lhs.shape:
+            lhs_grad = summation(
+                lhs_grad, axes=tuple(range(len(lhs_grad.shape) - 2)))
+        if rhs_grad.shape != rhs.shape:
+            rhs_grad = summation(
+                rhs_grad, axes=tuple(range(len(rhs_grad.shape) - 2)))
+        return lhs_grad, rhs_grad
 
 
 def matmul(a, b):

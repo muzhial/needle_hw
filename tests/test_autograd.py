@@ -246,7 +246,7 @@ class TestOperationBackward(unittest.TestCase):
     def test_matmul_batched_backward(self):
         gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(6, 6, 5, 4)),
                        ndl.Tensor(np.random.randn(6, 6, 4, 3)))
-        # gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(6, 6, 5, 4)),
-        #                ndl.Tensor(np.random.randn(4, 3)))
-        # gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(5, 4)),
-        #                ndl.Tensor(np.random.randn(6, 6, 4, 3)))
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(6, 6, 5, 4)),
+                       ndl.Tensor(np.random.randn(4, 3)))
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(5, 4)),
+                       ndl.Tensor(np.random.randn(6, 6, 4, 3)))
