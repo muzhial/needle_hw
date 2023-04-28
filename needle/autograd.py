@@ -1,18 +1,16 @@
 """Core data structures."""
-from collections import namedtuple
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
+# NOTE: we will numpy as the array_api
+# to backup our computations, this line will change in later homeworks
 import numpy
+import numpy as array_api
 
 import needle
 
 # needle version
 LAZY_MODE = False
 TENSOR_COUNTER = 0
-
-# NOTE: we will numpy as the array_api
-# to backup our computations, this line will change in later homeworks
-import numpy as array_api
 
 NDArray = numpy.ndarray
 
@@ -178,7 +176,6 @@ class Value:
         return value
 
 
-### Not needed in HW1
 class TensorTuple(Value):
     """Represent a tuple of tensors.
 
@@ -331,9 +328,9 @@ class Tensor(Value):
             return needle.ops.AddScalar(other)(self)
 
     def __mul__(self, other):
-        """
-        The method is called to implement the element-wise multiplication
-          operation * when the left operand is a Tensor.
+        """The method is called to implement the element-wise multiplication.
+
+        operation * when the left operand is a Tensor.
         """
         if isinstance(other, Tensor):
             return needle.ops.EWiseMul()(self, other)
@@ -359,10 +356,8 @@ class Tensor(Value):
             return needle.ops.DivScalar(other)(self)
 
     def __matmul__(self, other):
-        """
-        The method is called to implement
-          the matrix multiplication operation @.
-        """
+        """The method is called to implement the matrix multiplication
+        operation @."""
         return needle.ops.MatMul()(self, other)
 
     def matmul(self, other):
@@ -398,15 +393,22 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     node_to_output_grads_list: Dict[Tensor, List[Tensor]] = {}
     # Special note on initializing gradient of
     # We are really taking a derivative of the scalar reduce_sum(output_node)
-    # instead of the vector output_node. But this is the common case for loss function.
+    # instead of the vector output_node.
+    # But this is the common case for loss function.
     node_to_output_grads_list[output_tensor] = [out_grad]
 
-    # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
+    # Traverse graph in reverse topological order given the output_node that
+    # we are taking gradient wrt.
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
 
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    for node in reverse_topo_order:
+        node.grad = sum_node_list(node_to_output_grads_list[node])
+        if node.op is None:
+            continue
+        in_grads = node.op.gradient_as_tuple(node.grad, node)
+        for input_grad in zip(node.inputs, in_grads):
+            node_to_output_grads_list.setdefault(input_grad[0],
+                                                 []).append(input_grad[1])
 
 
 def find_topo_sort(node_list: List[Value]) -> List[Value]:
@@ -418,21 +420,22 @@ def find_topo_sort(node_list: List[Value]) -> List[Value]:
     after all its predecessors are traversed due to post-order DFS, we get a
     topological sort.
     """
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    # TODO: add circle check
+    topo_order = []
+    visited = set()
+    for node in node_list:
+        topo_sort_dfs(node, visited, topo_order)
+    return topo_order
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS."""
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
-
-
-##############################
-####### Helper Methods #######
-##############################
+    if node in visited:
+        return
+    visited.add(node)
+    for input_node in node.inputs:
+        topo_sort_dfs(input_node, visited, topo_order)
+    topo_order.append(node)
 
 
 def sum_node_list(node_list):

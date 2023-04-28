@@ -250,3 +250,116 @@ class TestOperationBackward(unittest.TestCase):
                        ndl.Tensor(np.random.randn(4, 3)))
         gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(5, 4)),
                        ndl.Tensor(np.random.randn(6, 6, 4, 3)))
+
+    def test_negate_backward(self):
+        gradient_check(ndl.negate, ndl.Tensor(np.random.randn(5, 4)))
+
+    def test_reshape_backward(self):
+        gradient_check(ndl.reshape,
+                       ndl.Tensor(np.random.randn(5, 4)),
+                       shape=(4, 5))
+
+    def test_transpose_backward(self):
+        gradient_check(ndl.transpose,
+                       ndl.Tensor(np.random.randn(3, 5, 4)),
+                       axes=(1, 2))
+        gradient_check(ndl.transpose,
+                       ndl.Tensor(np.random.randn(3, 5, 4)),
+                       axes=(0, 1))
+
+    def test_summation_backward(self):
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(5, 4)),
+                       axes=(1, ))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(5, 4)),
+                       axes=(0, ))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(5, 4)),
+                       axes=(0, 1))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(5, 4, 1)),
+                       axes=(0, 1))
+
+    def test_broadcast_to_backward(self):
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(3, 1)),
+                       shape=(3, 3))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(1, 3)),
+                       shape=(3, 3))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(1, )),
+                       shape=(3, 3, 3))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn()),
+                       shape=(3, 3, 3))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(5, 4, 1)),
+                       shape=(5, 4, 3))
+
+    def test_submit_backward(self):
+        gradient_check(ndl.divide, ndl.Tensor(np.random.randn(3, 5)),
+                       ndl.Tensor(6 + np.random.randn(3, 5)))
+        gradient_check(ndl.divide_scalar,
+                       ndl.Tensor(np.random.randn(3, 5)),
+                       scalar=np.random.randn(1))
+
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(1, 5)),
+                       ndl.Tensor(np.random.randn(5, 1)))
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(2, 4)),
+                       ndl.Tensor(np.random.randn(4, 2)))
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(2, 4)),
+                       ndl.Tensor(np.random.randn(7, 4, 2)))
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(3, 2, 1)),
+                       ndl.Tensor(np.random.randn(3, 3, 1, 2)))
+        gradient_check(ndl.matmul, ndl.Tensor(np.random.randn(2, 4)),
+                       ndl.Tensor(np.random.randn(2, 4, 4, 2)))
+
+        gradient_check(ndl.reshape,
+                       ndl.Tensor(np.random.randn(5, 4)),
+                       shape=(5, 4, 1))
+        gradient_check(ndl.reshape,
+                       ndl.Tensor(np.random.randn(5, 4)),
+                       shape=(2, 2, 5))
+
+        gradient_check(ndl.negate, ndl.Tensor(np.random.randn(1, 4, 2)))
+
+        gradient_check(ndl.transpose,
+                       ndl.Tensor(np.random.randn(3, 2, 4)),
+                       axes=(0, 2))
+
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(7, 1)),
+                       shape=(7, 7))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(1, 5)),
+                       shape=(5, 5))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(1, )),
+                       shape=(4, 4, 4))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn()),
+                       shape=(1, 3, 6))
+        gradient_check(ndl.broadcast_to,
+                       ndl.Tensor(np.random.randn(4, 4, 1)),
+                       shape=(4, 4, 6))
+
+        gradient_check(ndl.summation, ndl.Tensor(np.random.randn(3, 2, 1)))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(3, 6)),
+                       axes=(1, ))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(7, )),
+                       axes=(0, ))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(7, 8)),
+                       axes=(0, 1))
+        gradient_check(ndl.summation,
+                       ndl.Tensor(np.random.randn(5, 4, 5)),
+                       axes=(0, 1, 2))
+
+
+# if __name__ == '__main__':
+#     test_bk = TestOperationBackward()
+#     test_bk.test_broadcast_to_backward()
